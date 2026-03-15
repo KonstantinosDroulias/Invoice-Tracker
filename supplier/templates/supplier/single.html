@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}{{ supplier.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Header bar -->
+<div class="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+    <a href="{% url 'home' %}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+    <span class="text-xs text-gray-500 tracking-widest uppercase">Supplier Detail</span>
+    <div class="w-16"></div>
+</div>
+
+<!-- Supplier form -->
+<form method="POST" action="{% url 'single' supplier.id %}" class="bg-gray-50 border-b border-gray-200 px-6 py-5 flex flex-col lg:flex-row items-start lg:items-end gap-6 w-full">
+    {% csrf_token %}
+
+    <!-- Name -->
+    <div class="shrink-0 flex flex-col gap-0.5">
+        <input
+            class="text-2xl font-bold bg-transparent border-b-2 border-transparent focus:border-gray-800 outline-none w-full lg:min-w-[180px] text-gray-900 pb-0.5"
+            type="text"
+            value="{{ supplier.name }}"
+            name="supplierName"
+            placeholder="Supplier name"
+        >
+        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Supplier</span>
+    </div>
+
+    <div class="hidden lg:block w-px h-10 bg-gray-200 shrink-0"></div>
+
+    <!-- Fields -->
+    <div class="flex flex-col gap-3 w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-0.5">
+                <input class="border-b border-gray-300 text-sm w-full bg-transparent outline-none focus:border-blue-500 pb-0.5 text-gray-700" name="supplierEmail" id="supplierEmail" value="{{ supplier.email }}" type="text" placeholder="—">
+                <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="supplierEmail">Email</label>
+            </div>
+            <div class="flex flex-col gap-0.5">
+                <input class="border-b border-gray-300 text-sm w-full bg-transparent outline-none focus:border-blue-500 pb-0.5 text-gray-700" name="supplierPhone" id="supplierPhone" value="{{ supplier.phone }}" type="text" placeholder="—">
+                <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="supplierPhone">Phone</label>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex items-center gap-2">
+                <label class="text-xs text-gray-400 shrink-0 w-5 text-center" for="supplierWebsite"><i class="fa-solid fa-globe"></i></label>
+                <div class="flex flex-col gap-0.5 w-full">
+                    <input class="border-b border-gray-300 text-sm w-full bg-transparent outline-none focus:border-blue-500 pb-0.5 text-gray-700" name="supplierWebsite" id="supplierWebsite" value="{{ supplier.url }}" type="text" placeholder="—">
+                    <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="supplierWebsite">Website</label>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <label class="text-xs text-gray-400 shrink-0 w-5 text-center" for="supplierCountry"><i class="fa-solid fa-earth-americas"></i></label>
+                <div class="flex flex-col gap-0.5 w-full">
+                    <input class="border-b border-gray-300 text-sm w-full bg-transparent outline-none focus:border-blue-500 pb-0.5 text-gray-700" name="supplierCountry" id="supplierCountry" value="{{ supplier.country }}" type="text" placeholder="—">
+                    <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="supplierCountry">Country</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="shrink-0 w-full lg:w-auto px-5 py-2 bg-gray-900 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors font-medium">
+        Update
+    </button>
+</form>
+
+<!-- Main area -->
+<div class="flex flex-col xl:flex-row min-h-screen">
+
+    <!-- Table section -->
+    <div class="flex-1 p-6 overflow-x-auto">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-4">Transactions</p>
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-xs text-gray-400 border-b">
+                    <th class="pb-2 pr-4">Date</th>
+                    <th class="pb-2 pr-4">Type</th>
+                    <th class="pb-2 pr-4">Amount</th>
+                    <th class="pb-2 pr-4">Extra</th>
+                    <th class="pb-2"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for t in transactions %}
+                <tr>
+                    <td class="py-2 pr-4 text-gray-500 whitespace-nowrap">{{ t.date }}</td>
+                    <td class="py-2 pr-4">
+                        <span class="px-2 py-0.5 rounded-md text-xs font-medium {% if t.invoice_id is not None %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                            {% if t.invoice_id is not None %}Χρέωση{% else %}Πληρωμή{% endif %}
+                        </span>
+                    </td>
+                    <td class="py-2 pr-4 font-semibold">
+                        {% if t.invoice_id is not None %}-{% else %}+{% endif %}{{ t.amount }}€
+                    </td>
+                    <td class="py-2 pr-4 text-gray-400 text-xs">
+                        {% if t.invoice_id %}#{{ t.invoice_id }}{% endif %}
+                        {% if t.bank %}{{ t.bank }}{% endif %}
+                    </td>
+                    <td class="py-2 text-right">
+                        <form method="POST" action="{% if t.invoice_id is not None %}{% url 'delete_invoice' supplier.id t.id %}{% else %}{% url 'delete_payment' supplier.id t.id %}{% endif %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-gray-300 hover:text-red-500 transition-colors">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="xl:w-64 bg-gray-50 border-t xl:border-t-0 xl:border-l border-gray-200 p-6 flex flex-col gap-6 shrink-0">
+
+        <!-- Balance summary -->
+        <div class="flex flex-col gap-2">
+            <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Summary</p>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">Χρεώσεις</span>
+                <span class="text-sm font-mono text-gray-700">-{{ supplier.total_invoiced }}€</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-500">Πληρωμές</span>
+                <span class="text-sm font-mono text-gray-700">+{{ supplier.total_paid }}€</span>
+            </div>
+            <div class="border-t border-gray-200 pt-2 mt-1 flex justify-between items-center">
+                <span class="text-xs text-gray-500 uppercase tracking-widest">Υπόλοιπο</span>
+                <span class="text-xl font-bold font-mono {% if supplier.balance > 0 %}text-red-500{% else %}text-gray-900{% endif %}">
+                    {% if supplier.balance > 0 %}-{% endif %}{{ supplier.balance }}€
+                </span>
+            </div>
+            {% if supplier.balance < 0 %}
+            <p class="text-xs text-orange-400 flex items-center gap-1 mt-1">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Οι πληρωμές υπερβαίνουν τα τιμολόγια, παρακαλώ ελέγξτε τα στοιχεία σας.
+            </p>
+            {% endif %}
+        </div>
+
+        <hr class="border-gray-200">
+
+        <!-- Actions -->
+        <div class="flex flex-col gap-2">
+            <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Actions</p>
+            <a class="text-center rounded-lg py-2 px-4 bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors" href="{% url 'payment' supplier.id %}">
+                <i class="fa-solid fa-plus mr-1"></i> Πληρωμή
+            </a>
+            <a class="text-center rounded-lg py-2 px-4 bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors" href="{% url 'invoice' supplier.id %}">
+                <i class="fa-solid fa-file-invoice mr-1"></i> Χρέωση
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

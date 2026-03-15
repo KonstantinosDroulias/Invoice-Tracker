@@ -1,0 +1,22 @@
+<header class="bg-gray-900 text-white px-6 py-3 flex items-center justify-between">
+
+    <!-- Logo / Brand -->
+    <a href="{% url 'home' %}" class="text-sm font-semibold tracking-widest uppercase text-gray-100 hover:text-white transition-colors">
+        <i class="fa-solid fa-file-invoice-dollar mr-2 text-blue-400"></i>Invoice Tracker
+    </a>
+
+    <!-- Search -->
+    <form class="flex items-center gap-0 bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:border-gray-500 transition-colors" action="">
+        <input
+            class="bg-transparent text-sm text-gray-200 placeholder-gray-500 px-3 py-1.5 outline-none w-48 focus:w-64 transition-all"
+            name="searchbar"
+            id="searchbar"
+            type="text"
+            placeholder="Search suppliers..."
+        >
+        <button type="submit" class="px-3 py-1.5 text-gray-400 hover:text-white transition-colors border-l border-gray-700">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </button>
+    </form>
+
+</header>

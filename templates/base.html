@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/dist/output.css' %}">
+    <script defer src="https://kit.fontawesome.com/20fe453a9e.js" crossorigin="anonymous"></script>
+    <title>{% block title %}{% endblock %} — Invoice Tracker</title>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col">
+    {% include './header.html' %}
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+    {% include './footer.html' %}
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

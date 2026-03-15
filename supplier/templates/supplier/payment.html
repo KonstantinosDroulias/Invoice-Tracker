@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Πληρωμή {{ supplier.name }}{% endblock %}
+
+{% block content %}
+
+<div class="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+    <a href="{% url 'single' supplier.id %}" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+    <span class="text-xs text-gray-500 tracking-widest uppercase">New Payment</span>
+    <div class="w-16"></div>
+</div>
+
+<div class="max-w-sm mx-auto px-6 py-8">
+
+    <div class="mb-6">
+        <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Supplier</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ supplier.name }}</h1>
+    </div>
+
+    <form class="flex flex-col gap-5" method="POST" action="{% url 'payment' supplier.id %}">
+        {% csrf_token %}
+
+        <div class="flex flex-col gap-0.5">
+            <input class="border-b border-gray-300 text-sm outline-none focus:border-blue-500 pb-0.5 text-gray-700 bg-transparent" type="date" name="paymentDate" id="paymentDate">
+            <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="paymentDate">Ημερομηνία</label>
+        </div>
+
+        <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-1">
+                <input class="border-b border-gray-300 text-sm outline-none focus:border-blue-500 pb-0.5 text-gray-700 bg-transparent w-full" type="text" name="paymentAmount" id="paymentAmount" placeholder="0.00">
+                <span class="text-gray-400 text-sm shrink-0">€</span>
+            </div>
+            <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="paymentAmount">Ποσό</label>
+        </div>
+
+        <div class="flex flex-col gap-0.5">
+            <input class="border-b border-gray-300 text-sm outline-none focus:border-blue-500 pb-0.5 text-gray-700 bg-transparent" type="text" name="paymentBank" id="paymentBank" placeholder="—">
+            <label class="text-[10px] text-gray-400 uppercase tracking-widest" for="paymentBank">Τράπεζα</label>
+        </div>
+
+        <button type="submit" class="mt-2 w-full py-2 bg-gray-900 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors font-medium">
+            Καταγραφή
+        </button>
+
+    </form>
+</div>
+
+{% endblock %}
