@@ -11,6 +11,13 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_network
 
   web:
     build: .
@@ -19,12 +26,19 @@ services:
     ports:
       - "8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    networks:
+      - app_network
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+
+networks:
+  app_network:
+    driver: bridge
